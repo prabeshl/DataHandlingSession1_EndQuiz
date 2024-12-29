@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .quiz-container {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin-bottom: 10px;
+        }
+        .options input {
+            margin-right: 10px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .score {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="quiz">
+            <!-- Quiz content will be injected here -->
+        </div>
+        <button id="next-btn" class="btn" disabled>Next</button>
+        <div id="result" class="score"></div>
+    </div>
+
+    <script>
+        const quizQuestions = [
+            {
+                "question": "Which data type involves observations collected over time?",
+                "options": ["Cross-sectional data", "Time series data", "Panel data", "None of the above"],
+                "answer": "Time series data"
+            },
+            {
+                "question": "Annual revenues of companies collected at the end of a year represent which type of data?",
+                "options": ["Cross-sectional data", "Time series data", "Panel data", "Longitudinal data"],
+                "answer": "Cross-sectional data"
+            },
+            {
+                "question": "Quarterly earnings for multiple companies over several years is an example of:",
+                "options": ["Cross-sectional data", "Panel data", "Time series data", "None of the above"],
+                "answer": "Panel data"
+            },
+            {
+                "question": "Which pandas function is used to import a CSV file?",
+                "options": ["pd.read_excel()", "pd.read_json()", "pd.read_csv()", "pd.read_table()"],
+                "answer": "pd.read_csv()"
+            },
+            {
+                "question": "What is the default delimiter for a CSV file in pandas?",
+                "options": ["Tab", "Comma", "Pipe", "Space"],
+                "answer": "Comma"
+            },
+            {
+                "question": "How would you export a DataFrame to an Excel file in pandas?",
+                "options": [
+                    "df.to_excel(\"output.csv\")",
+                    "df.to_excel(\"output.xlsx\")",
+                    "df.to_excel(\"output.txt\")",
+                    "df.to_excel(\"output.json\")"
+                ],
+                "answer": "df.to_excel(\"output.xlsx\")"
+            },
+            {
+                "question": "Which formula represents Min-Max scaling?",
+                "options": [
+                    "(x - μ) / σ",
+                    "(x - min) / (max - min)",
+                    "log(x)",
+                    "(x - mean)^2"
+                ],
+                "answer": "(x - min) / (max - min)"
+            },
+            {
+                "question": "What is the primary purpose of log transformations in data analysis?",
+                "options": ["Normalize data", "Reduce skewness", "Remove outliers", "Scale data to 0-1"],
+                "answer": "Reduce skewness"
+            },
+            {
+                "question": "How can outliers in a dataset be handled using clipping?",
+                "options": [
+                    "Replace outliers with the mean",
+                    "Replace with thresholds",
+                    "Remove all outliers",
+                    "Replace missing values with 0"
+                ],
+                "answer": "Replace with thresholds"
+            },
+            {
+                "question": "After applying Min-Max scaling to a column, what will be the range of values?",
+                "options": ["0 to 10", "-1 to 1", "0 to 1", "-10 to 10"],
+                "answer": "0 to 1"
+            },
+            {
+                "question": "Which column is crucial for consolidating stock data into panel data format?",
+                "options": ["Volume", "Ticker", "Date", "Open"],
+                "answer": "Ticker"
+            },
+            {
+                "question": "Why is pd.concat() used in pandas?",
+                "options": [
+                    "concatenate row or column-wise",
+                    "merge two DataFrames",
+                    "calculate the cumulative sum",
+                    "group data by a column"
+                ],
+                "answer": "To concatenate DataFrames row-wise or column-wise"
+            },
+            {
+                "question": "What does the following code do?\ndf['Cumulative Return (%)'] = ((1 + df['Daily Return (%)'] / 100).cumprod() - 1) * 100",
+                "options": [
+                    "Calculates daily returns",
+                    "Calculates cumulative returns",
+                    "Normalizes the data",
+                    "Applies log transformations"
+                ],
+                "answer": "Calculates cumulative returns"
+            },
+            {
+                "question": "In financial analysis, what does the High-Low Spread (%) typically represent?",
+                "options": [
+                    "The normalized trading volume",
+                    "The High Low spreads",
+                    "The log of stock prices",
+                    "The cumulative trading volume"
+                ],
+                "answer": "The High Low spreads"
+            },
+            {
+                "question": "What is the first step when working with missing values in a dataset?",
+                "options": [
+                    "Fill with the mean",
+                    "Remove all missing values",
+                    "Inspect the reason",
+                    "Replace with 0"
+                ],
+                "answer": "Inspect the reason"
+            },
+            {
+                "question": "Why is it important to visualize data after transformations?",
+                "options": [
+                    "To validate the transformations",
+                    "To check for remaining outliers",
+                    "To check data distribution",
+                    "All of the above"
+                ],
+                "answer": "All of the above"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const quizContainer = document.getElementById('quiz');
+        const nextButton = document.getElementById('next-btn');
+        const resultContainer = document.getElementById('result');
+
+        function displayQuestion() {
+            const question = quizQuestions[currentQuestionIndex];
+
+            quizContainer.innerHTML = `
+                <div class="question">${currentQuestionIndex + 1}. ${question.question}</div>
+                <ul class="options">
+                    ${question.options
+                        .map(
+                            (option, index) => `
+                                <li>
+                                    <label>
+                                        <input type="radio" name="option" value="${option}" />
+                                        ${option}
+                                    </label>
+                                </li>
+                            `
+                        )
+                        .join('')}
+                </ul>
+            `;
+
+            nextButton.disabled = true;
+            const options = document.querySelectorAll('input[name="option"]');
+            options.forEach(option => {
+                option.addEventListener('change', () => {
+                    nextButton.disabled = false;
+                });
+            });
+        }
+
+        function showResult() {
+            quizContainer.style.display = 'none';
+            nextButton.style.display = 'none';
+            resultContainer.innerHTML = `🎯 Quiz Completed! Your score is: ${score}/${quizQuestions.length}`;
+            if (score === quizQuestions.length) {
+                resultContainer.innerHTML += '<br>🏆 Congratulations! You are a Quiz Master!';
+            } else if (score >= quizQuestions.length / 2) {
+                resultContainer.innerHTML += '<br>🎖️ Well done! Keep it up!';
+            } else {
+                resultContainer.innerHTML += '<br>💪 Keep practicing to improve!';
+            }
+        }
+
+        nextButton.addEventListener('click', () => {
+            const selectedOption = document.querySelector('input[name="option"]:checked');
+            if (selectedOption.value === quizQuestions[currentQuestionIndex].answer) {
+                score++;
+            }
+
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizQuestions.length) {
+                displayQuestion();
+            } else {
+                showResult();
+            }
+        });
+
+        // Initialize the quiz
+        displayQuestion();
+    </script>
+</body>
+</html>
